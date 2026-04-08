@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>예약 취소 | 뚝딱거리는 커피테이블</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>예약 취소</h1>
+      <p class="subtitle">뚝딱거리는 커피테이블 팝업</p>
+    </header>
+
+    <section id="step-cancel-form" class="step active">
+      <h2>예약 정보를 입력해 주세요</h2>
+      <div class="form-group">
+        <label for="cancel-code">예약코드</label>
+        <input type="text" id="cancel-code" placeholder="예: FCT-A1B2C3" maxlength="12"
+               style="text-transform:uppercase">
+      </div>
+      <div class="form-group">
+        <label for="cancel-phone">연락처 (예약 시 입력한 번호)</label>
+        <input type="tel" id="cancel-phone" placeholder="010-0000-0000" maxlength="13">
+      </div>
+      <button class="btn-primary" onclick="submitCancel()">취소 확인</button>
+      <p style="text-align:center;margin-top:16px">
+        <a href="index.html" style="color:var(--muted);font-size:14px">← 예약 페이지로 돌아가기</a>
+      </p>
+    </section>
+
+    <section id="step-cancel-done" class="step">
+      <div class="success-icon" style="background:var(--coral)">✓</div>
+      <h2>취소 완료</h2>
+      <p id="cancel-done-msg" style="text-align:center;color:var(--muted);margin-top:8px"></p>
+      <a href="index.html" class="btn-primary" style="display:block;text-align:center;margin-top:24px">
+        다시 예약하기
+      </a>
+    </section>
+
+    <section id="step-cancel-error" class="step">
+      <div class="error-icon">!</div>
+      <h2>취소 실패</h2>
+      <p id="cancel-error-msg" style="text-align:center;color:var(--muted)"></p>
+      <button class="btn-primary" onclick="resetCancel()">다시 입력하기</button>
+    </section>
+  </div>
+
+  <script>
+    const GAS_URL = 'https://script.google.com/macros/s/AKfycby7qgj93LtLd7pMIxugiZoekiEK9byrQR2l1eLAfbmIzztETXk5BhhWwxrOcb7ulQ5dww/exec'; // app.js와 동일하게 설정
+
+    function formatPhone(value) {
+      const digits = value.replace(/\D/g, '');
+      if (digits.length <= 3) return digits;
+      if (digits.length <= 7) return digits.slice(0,3) + '-' + digits.slice(3);
+      return digits.slice(0,3) + '-' + digits.slice(3,7) + '-' + digits.slice(7,11);
+    }
+
+    document.getElementById('cancel-phone').addEventListener('input', function() {
+      this.value = formatPhone(this.value);
+    });
+
+    document.getElementById('cancel-code').addEventListener('input', function() {
+      this.value = this.value.toUpperCase();
+    });
+
+    function showStep(id) {
+      document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
+      document.getElementById(id).classList.add('active');
+    }
+
+    async function submitCancel() {
+      const code = document.getElementById('cancel-code').value.trim();
+      const phone = document.getElementById('cancel-phone').value.trim();
+
+      if (!code || !phone) { alert('예약코드와 연락처를 모두 입력해 주세요.'); return; }
+
+      const btn = document.querySelector('#step-cancel-form .btn-primary');
+      btn.textContent = '처리 중...';
+      btn.disabled = true;
+
+      try {
+        const res = await fetch(GAS_URL, {
+          method: 'POST',
+          body: JSON.stringify({ action: 'cancel', code, phone })
+        });
+        const data = await res.json();
+
+        if (data.success) {
+          document.getElementById('cancel-done-msg').textContent =
+            `${data.time} 예약이 취소되었습니다.`;
+          showStep('step-cancel-done');
+        } else {
+          document.getElementById('cancel-error-msg').textContent =
+            data.message || '예약코드 또는 연락처가 일치하지 않습니다.';
+          showStep('step-cancel-error');
+        }
+      } catch {
+        document.getElementById('cancel-error-msg').textContent = '네트워크 오류가 발생했습니다. 다시 시도해 주세요.';
+        showStep('step-cancel-error');
+      }
+    }
+
+    function resetCancel() { showStep('step-cancel-form'); }
+  </script>
+</body>
+</html>

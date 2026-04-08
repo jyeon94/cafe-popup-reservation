@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>뚝딱거리는 커피테이블 팝업 예약</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="container">
+    <header>
+      <p class="event-label">2025. 4. 26 SAT</p>
+      <h1>뚝딱거리는 커피테이블</h1>
+      <p class="subtitle">@ Nolimit Coffee Roasters, 용산</p>
+    </header>
+
+    <section id="step-time" class="step active">
+      <h2>시간대를 선택해 주세요</h2>
+      <div id="slot-list" class="slot-grid">
+        <!-- JS로 동적 렌더링 -->
+        <div class="loading">슬롯 불러오는 중...</div>
+      </div>
+    </section>
+
+    <section id="step-form" class="step">
+      <h2>예약 정보를 입력해 주세요</h2>
+      <p class="selected-time-display" id="selected-time-label"></p>
+
+      <div class="form-group">
+        <label for="name">이름</label>
+        <input type="text" id="name" placeholder="홍길동" maxlength="20">
+      </div>
+      <div class="form-group">
+        <label for="phone">연락처</label>
+        <input type="tel" id="phone" placeholder="010-0000-0000" maxlength="13">
+      </div>
+      <div class="form-group">
+        <label for="guests">인원</label>
+        <div class="guests-control">
+          <button type="button" id="guests-minus" onclick="changeGuests(-1)">−</button>
+          <span id="guests-count">1</span>
+          <button type="button" id="guests-plus" onclick="changeGuests(1)">+</button>
+        </div>
+        <p class="guests-hint" id="guests-hint"></p>
+      </div>
+
+      <div class="btn-row">
+        <button class="btn-secondary" onclick="goBack()">← 시간 재선택</button>
+        <button class="btn-primary" onclick="submitReservation()">예약하기</button>
+      </div>
+    </section>
+
+    <section id="step-done" class="step">
+      <div class="success-icon">✓</div>
+      <h2>예약 완료!</h2>
+      <div class="reservation-card" id="reservation-card">
+        <!-- JS로 채워짐 -->
+      </div>
+
+      <div class="insta-box" id="insta-box">
+        <p class="insta-prompt">당일 감사한 마음을 담아 인스타 DM 드릴게요.<br>아이디 남겨주시면 찾아갈게요 ☕</p>
+        <div class="insta-input-row">
+          <span class="insta-at">@</span>
+          <input type="text" id="insta-id" placeholder="아이디" maxlength="40" autocomplete="off">
+          <button class="btn-insta" onclick="submitInsta()">보내기</button>
+        </div>
+        <p class="insta-skip" onclick="skipInsta()">괜찮아요, 건너뛸게요</p>
+      </div>
+      <div id="insta-done" style="display:none">
+        <p class="insta-sent">감사해요 🤍 곧 DM 드릴게요</p>
+      </div>
+
+      <p class="cancel-notice">
+        예약 취소는 아래 버튼을 눌러주세요.<br>
+        <strong>예약코드</strong>를 꼭 저장해 두세요.
+      </p>
+      <a href="cancel.html" class="btn-cancel-link">예약 취소하기 →</a>
+    </section>
+
+    <section id="step-error" class="step">
+      <div class="error-icon">!</div>
+      <h2 id="error-title">예약에 실패했습니다</h2>
+      <p id="error-msg"></p>
+      <button class="btn-primary" onclick="resetAll()">처음으로</button>
+    </section>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
