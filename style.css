@@ -226,6 +226,23 @@ body {
 
 #step-time h2 { text-align: center; }
 
+/* 데스크탑: h2 상단 고정, 슬롯 세로 중앙 */
+@media (min-width: 768px) {
+  #step-time {
+    display: flex;
+    flex-direction: column;
+    height: calc(100vh - 48px);
+  }
+
+  #step-time .slot-grid {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    margin-bottom: 0;
+  }
+}
+
 .step h2 {
   font-size: 17px;
   font-weight: 600;
