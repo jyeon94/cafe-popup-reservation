@@ -1,3 +1,11 @@
+@font-face {
+  font-family: 'NanumNeuRisNeuRisCe';
+  src: url('fonts/NanumNeuRisNeuRisCe.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
 :root {
   --bg: #faf9f7;
   --card: #ffffff;
@@ -58,10 +66,11 @@ body {
 }
 
 .panel-left h1 {
-  font-size: 26px;
-  font-weight: 700;
-  letter-spacing: -0.02em;
-  line-height: 1.25;
+  font-family: 'NanumNeuRisNeuRisCe', sans-serif;
+  font-size: 30px;
+  font-weight: normal;
+  letter-spacing: 0;
+  line-height: 1.35;
   color: #1a1a1a;
   margin-bottom: 10px;
 }
@@ -167,7 +176,7 @@ body {
   }
 
   .panel-left h1 {
-    font-size: 20px;
+    font-size: 24px;
     margin-bottom: 4px;
   }
 
