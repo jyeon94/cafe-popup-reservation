@@ -14,9 +14,13 @@
       <p class="subtitle" style="margin-bottom: 24px">예약 확인 / 취소</p>
     </header>
 
-    <!-- ① 전화번호 뒷 4자리 입력 -->
+    <!-- ① 이름 + 전화번호 뒷 4자리 입력 -->
     <section id="step-lookup" class="step active">
       <h2>예약 확인</h2>
+      <div class="form-group">
+        <label for="lookup-name">이름</label>
+        <input type="text" id="lookup-name" placeholder="홍길동" maxlength="20">
+      </div>
       <div class="form-group">
         <label for="phone4">전화번호 뒷 4자리</label>
         <input type="tel" id="phone4" placeholder="0000" maxlength="4" inputmode="numeric">
@@ -95,7 +99,9 @@
 
     // ① 조회
     async function lookupReservation() {
+      const name = document.getElementById('lookup-name').value.trim();
       const phone4 = document.getElementById('phone4').value.trim();
+      if (!name) { alert('이름을 입력해 주세요.'); return; }
       if (phone4.length !== 4) { alert('전화번호 뒷 4자리를 입력해 주세요.'); return; }
 
       const btn = document.querySelector('#step-lookup .btn-primary');
@@ -103,7 +109,7 @@
       btn.disabled = true;
 
       try {
-        const res = await fetch(`${GAS_URL}?action=confirm&phone4=${phone4}`);
+        const res = await fetch(`${GAS_URL}?action=confirm&name=${encodeURIComponent(name)}&phone4=${phone4}`);
         const data = await res.json();
 
         if (data.success) {
