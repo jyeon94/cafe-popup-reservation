@@ -9,13 +9,36 @@ let maxGuests = 6;
 // 초기화: 슬롯 목록 불러오기
 // ───────────────────────────────
 async function loadSlots() {
+  const messages = ['원두 가는 중', '물 끓이는 중', '드립 중', '거의 다 됐어요'];
+  let msgIdx = 0;
+
+  // 로딩 UI 삽입
+  const grid = document.getElementById('slot-list');
+  grid.innerHTML = `
+    <div class="coffee-loading">
+      <span class="coffee-loading-text">${messages[0]}</span>
+      <div class="coffee-dots">
+        <span></span><span></span><span></span>
+      </div>
+    </div>`;
+
+  const textEl = grid.querySelector('.coffee-loading-text');
+  const interval = setInterval(() => {
+    msgIdx = (msgIdx + 1) % messages.length;
+    textEl.classList.remove('fade-in');
+    void textEl.offsetWidth; // reflow로 애니메이션 재시작
+    textEl.classList.add('fade-in');
+    textEl.textContent = messages[msgIdx];
+  }, 1400);
+
   try {
     const res = await fetch(`${GAS_URL}?action=slots`);
     const slots = await res.json();
+    clearInterval(interval);
     renderSlots(slots);
   } catch {
-    document.getElementById('slot-list').innerHTML =
-      '<p style="color:#d4614a">슬롯을 불러오지 못했습니다. 새로고침해 주세요.</p>';
+    clearInterval(interval);
+    grid.innerHTML = '<p style="color:#d4614a">슬롯을 불러오지 못했습니다. 새로고침해 주세요.</p>';
   }
 }
 

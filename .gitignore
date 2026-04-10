@@ -1,0 +1,6 @@
+# Google Apps Script (API 키, SHEET_ID 등 민감 정보 포함)
+gas/
+
+# Claude Code 관련
+CLAUDE.md
+12-9-1-logs/
