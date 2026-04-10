@@ -34,14 +34,15 @@ body {
 .panel-left {
   width: 380px;
   flex-shrink: 0;
-  background: var(--primary);
-  color: var(--primary-text);
+  background: #eeeae3;
+  color: #1a1a1a;
   display: flex;
   align-items: center;
   padding: 48px 40px;
   position: sticky;
   top: 0;
   height: 100vh;
+  overflow-y: auto;
 }
 
 .panel-left-inner {
@@ -51,7 +52,7 @@ body {
 .panel-left .event-label {
   font-size: 12px;
   letter-spacing: 0.12em;
-  color: var(--accent);
+  color: #8a6f3e;
   margin-bottom: 14px;
   font-weight: 500;
 }
@@ -61,14 +62,20 @@ body {
   font-weight: 700;
   letter-spacing: -0.02em;
   line-height: 1.25;
-  color: #fff;
+  color: #1a1a1a;
   margin-bottom: 10px;
 }
 
 .panel-tagline {
   font-size: 13px;
-  color: rgba(255,255,255,0.45);
-  margin-bottom: 36px;
+  color: #6b6657;
+  margin-bottom: 28px;
+}
+
+.panel-divider {
+  border: none;
+  border-top: 1px solid #ccc9c0;
+  margin-bottom: 24px;
 }
 
 .event-meta {
@@ -76,14 +83,14 @@ body {
   display: flex;
   flex-direction: column;
   gap: 12px;
-  margin-bottom: 36px;
+  margin-bottom: 0;
 }
 
 .event-meta li {
   display: flex;
   gap: 12px;
   font-size: 14px;
-  color: rgba(255,255,255,0.75);
+  color: #1a1a1a;
   line-height: 1.4;
 }
 
@@ -93,23 +100,31 @@ body {
   font-size: 11px;
   font-weight: 600;
   letter-spacing: 0.05em;
-  color: rgba(255,255,255,0.35);
+  color: #8a6f3e;
   padding-top: 1px;
   text-transform: uppercase;
 }
 
+.panel-image {
+  width: 100%;
+  border-radius: 10px;
+  margin-top: 16px;
+  display: block;
+}
+
 .panel-confirm-link {
   display: inline-block;
+  margin-top: 16px;
   font-size: 13px;
-  color: rgba(255,255,255,0.45);
+  color: #8a7f6e;
   text-decoration: none;
-  border-bottom: 1px solid rgba(255,255,255,0.2);
+  border-bottom: 1px solid #ccc9c0;
   padding-bottom: 2px;
   transition: color 0.15s;
 }
 
 .panel-confirm-link:hover {
-  color: rgba(255,255,255,0.8);
+  color: #1a1a1a;
 }
 
 .panel-right {
@@ -146,8 +161,9 @@ body {
     width: 100%;
     height: auto;
     position: static;
-    padding: 28px 20px 24px;
+    padding: 28px 20px 20px;
     align-items: flex-start;
+    overflow-y: visible;
   }
 
   .panel-left h1 {
@@ -157,7 +173,14 @@ body {
 
   .panel-tagline { display: none; }
 
+  .panel-divider { display: none; }
+
   .event-meta { display: none; }
+
+  .panel-image {
+    border-radius: 8px;
+    margin-top: 14px;
+  }
 
   .panel-confirm-link { margin-top: 12px; display: block; }
 
