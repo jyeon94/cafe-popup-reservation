@@ -232,13 +232,13 @@ body {
 
 /* 데스크탑: h2 상단 고정, 슬롯 세로 중앙 */
 @media (min-width: 768px) {
-  #step-time {
+  #step-time.active {
     display: flex;
     flex-direction: column;
     height: calc(100vh - 48px);
   }
 
-  #step-time .slot-grid {
+  #step-time.active .slot-grid {
     flex: 1;
     display: flex;
     flex-direction: column;
