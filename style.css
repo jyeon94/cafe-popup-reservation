@@ -177,10 +177,7 @@ body {
 
   .event-meta { display: none; }
 
-  .panel-image {
-    border-radius: 8px;
-    margin-top: 14px;
-  }
+  .panel-image { display: none; }
 
   .panel-confirm-link { margin-top: 12px; display: block; }
 
@@ -199,21 +196,24 @@ body {
   margin-bottom: 20px;
 }
 
-/* Slot grid */
+/* Slot list */
 .slot-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
+  display: flex;
+  flex-direction: column;
   gap: 10px;
   margin-bottom: 24px;
 }
 
 .slot-btn {
-  border: 1.5px solid var(--slot-avail-border);
+  border: 1.5px solid #c8a96e;
   background: var(--slot-avail);
-  border-radius: var(--radius);
-  padding: 18px 12px;
+  border-radius: 10px;
+  padding: 16px 20px;
   cursor: pointer;
-  text-align: center;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
   transition: all 0.15s;
 }
 
@@ -237,12 +237,11 @@ body {
 .slot-time {
   font-size: 18px;
   font-weight: 700;
-  margin-bottom: 4px;
 }
 
 .slot-remain {
-  font-size: 12px;
-  color: var(--muted);
+  font-size: 11px;
+  color: #6b6b6b;
 }
 
 .loading { color: var(--muted); font-size: 14px; padding: 20px 0; }
