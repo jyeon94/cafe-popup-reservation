@@ -140,6 +140,9 @@ body {
   flex: 1;
   padding: 48px 40px 60px;
   overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }
 
 .container {
@@ -213,7 +216,7 @@ body {
 .step h2 {
   font-size: 17px;
   font-weight: 600;
-  margin-bottom: 20px;
+  margin-bottom: 24px;
 }
 
 /* Slot list */
