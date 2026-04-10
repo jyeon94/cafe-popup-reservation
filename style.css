@@ -213,6 +213,10 @@ body {
     max-width: 480px;
   }
 
+  .step h2 {
+    font-size: 17px;
+  }
+
   .slot-grid {
     max-width: 320px;
     margin-left: auto;
