@@ -176,13 +176,16 @@ body {
   .panel-divider { display: none; }
 
   .event-meta {
-    display: flex;
+    display: flex !important;
+    flex-direction: column;
     margin-top: 14px;
     gap: 8px;
   }
 
   .event-meta li {
+    display: flex;
     font-size: 13px;
+    color: #1a1a1a;
   }
 
   .panel-image { display: none; }
