@@ -5,6 +5,20 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>예약 확인 | 뚝딱거리는 커피테이블</title>
   <link rel="stylesheet" href="style.css">
+  <style>
+    .copy-id { cursor: pointer; text-decoration: underline dotted; }
+    @media (max-width: 767px) {
+      .container { padding-left: 20px; padding-right: 20px; }
+    }
+    .slot-btn.current-slot { border-color: var(--accent); background: #f5f1ea; }
+    .change-done-wrap { text-align: center; }
+    #change-guests-count {
+      flex: 1;
+      text-align: center;
+      font-size: 18px;
+      font-weight: 700;
+    }
+  </style>
 </head>
 <body>
   <div class="container">
@@ -42,9 +56,10 @@
     <section id="step-info" class="step">
       <h2>예약 내역</h2>
       <div class="reservation-card" id="confirm-card"></div>
-      <button class="btn-primary" style="background:var(--coral);margin-top:8px" onclick="showStep('step-confirm')">
-        예약 취소하기
-      </button>
+      <div class="btn-row" style="grid-template-columns:1fr 1fr;margin-top:8px">
+        <button class="btn-secondary" onclick="startChange()">예약 변경하기</button>
+        <button class="btn-primary" style="background:var(--coral)" onclick="showStep('step-confirm')">예약 취소하기</button>
+      </div>
       <p style="text-align:center;margin-top:12px">
         <a href="index.html" style="color:var(--muted);font-size:14px">← 돌아가기</a>
       </p>
@@ -72,6 +87,57 @@
       </a>
     </section>
 
+    <!-- ⑤ 변경 — 시간 선택 -->
+    <section id="step-change-time" class="step">
+      <h2>시간을 선택해 주세요</h2>
+      <p id="change-current-label" style="text-align:center;font-size:13px;color:var(--muted);margin-bottom:16px"></p>
+      <div id="change-slot-list" class="slot-grid">
+        <div class="loading">슬롯 불러오는 중...</div>
+      </div>
+      <button class="btn-secondary" style="margin-top:4px" onclick="showStep('step-info')">← 돌아가기</button>
+    </section>
+
+    <!-- ⑥ 변경 — 인원 선택 -->
+    <section id="step-change-guests" class="step">
+      <h2>인원을 선택해 주세요</h2>
+      <p id="change-time-label" style="text-align:center;font-size:15px;font-weight:600;color:var(--accent);margin-bottom:20px"></p>
+      <div class="form-group">
+        <label>인원</label>
+        <div class="guests-control">
+          <button type="button" onclick="changeChangeGuests(-1)">−</button>
+          <span id="change-guests-count">1</span>
+          <button type="button" onclick="changeChangeGuests(1)">+</button>
+        </div>
+        <p class="guests-hint" id="change-guests-hint"></p>
+      </div>
+      <div class="btn-row">
+        <button class="btn-secondary" onclick="showStep('step-change-time')">← 시간 재선택</button>
+        <button class="btn-primary" onclick="showChangeConfirm()">다음</button>
+      </div>
+    </section>
+
+    <!-- ⑦ 변경 — 최종 확인 -->
+    <section id="step-change-confirm" class="step">
+      <h2>이렇게 변경할게요?</h2>
+      <div class="reservation-card" id="change-confirm-card"></div>
+      <div class="btn-row" style="grid-template-columns:1fr 1fr">
+        <button class="btn-secondary" onclick="showStep('step-change-guests')">← 수정</button>
+        <button class="btn-primary" onclick="submitChange()">변경하기</button>
+      </div>
+    </section>
+
+    <!-- ⑧ 변경 완료 -->
+    <section id="step-change-done" class="step">
+      <div class="change-done-wrap">
+        <div class="success-icon">✓</div>
+        <h2>변경 완료!</h2>
+        <p id="change-done-msg" style="color:var(--muted);margin-top:8px;font-size:15px"></p>
+        <a href="index.html" class="btn-primary" style="display:block;text-align:center;margin-top:24px;text-decoration:none">
+          예약 페이지로 돌아가기
+        </a>
+      </div>
+    </section>
+
     <!-- 에러 -->
     <section id="step-error" class="step">
       <div class="error-icon">!</div>
@@ -83,15 +149,10 @@
     </section>
   </div>
 
-  <style>
-    .copy-id { cursor: pointer; text-decoration: underline dotted; }
-    @media (max-width: 767px) {
-      .container { padding-left: 20px; padding-right: 20px; }
-    }
-  </style>
   <script>
     const GAS_URL = 'https://script.google.com/macros/s/AKfycby7qgj93LtLd7pMIxugiZoekiEK9byrQR2l1eLAfbmIzztETXk5BhhWwxrOcb7ulQ5dww/exec';
 
+    // 인스타 아이디 복사
     function copyInstaId(el) {
       const id = el.dataset.id;
       navigator.clipboard.writeText(id).then(() => {
@@ -103,6 +164,9 @@
     }
 
     let reservationData = null; // { code, name, phone, time, guests }
+    let changeNewTime = null;
+    let changeNewGuests = 1;
+    let changeSlotRemain = {}; // time → 실제 선택 가능 인원
 
     // 숫자만 허용
     document.getElementById('phone4').addEventListener('input', function () {
@@ -188,6 +252,110 @@
         showStep('step-error');
       } finally {
         btn.textContent = '네, 취소할게요';
+        btn.disabled = false;
+      }
+    }
+
+    // ⑤ 변경 — 시간 선택 화면 로드
+    async function startChange() {
+      document.getElementById('change-current-label').textContent =
+        `현재 예약: ${reservationData.time} / ${reservationData.guests}명`;
+
+      const slotList = document.getElementById('change-slot-list');
+      slotList.innerHTML = '<div class="loading">슬롯 불러오는 중...</div>';
+      showStep('step-change-time');
+
+      try {
+        const res = await fetch(`${GAS_URL}?action=slots`);
+        const slots = await res.json();
+        changeSlotRemain = {};
+        slotList.innerHTML = '';
+
+        slots.forEach(slot => {
+          // 현재 예약 슬롯이면 내 인원만큼 가용 자리 추가 계산
+          const isCurrent = slot.time === reservationData.time;
+          const remain = isCurrent
+            ? slot.max - slot.reserved + Number(reservationData.guests)
+            : slot.max - slot.reserved;
+          changeSlotRemain[slot.time] = remain;
+
+          const full = remain <= 0;
+          const btn = document.createElement('button');
+          btn.className = 'slot-btn' + (isCurrent ? ' current-slot' : '') + (full ? ' full' : '');
+          btn.disabled = full;
+          btn.innerHTML = `
+            <span class="slot-time">${slot.time}${isCurrent ? ' <small style="font-size:11px;font-weight:400;color:var(--accent)">(현재)</small>' : ''}</span>
+            <span class="slot-remain">${full ? '마감' : `${remain}자리 남음`}</span>
+          `;
+          btn.onclick = () => selectChangeTime(slot.time);
+          slotList.appendChild(btn);
+        });
+      } catch {
+        slotList.innerHTML = '<p style="text-align:center;color:var(--muted)">슬롯을 불러오지 못했습니다.</p>';
+      }
+    }
+
+    // ⑥ 시간 선택 → 인원 선택 화면
+    function selectChangeTime(time) {
+      changeNewTime = time;
+      changeNewGuests = Number(reservationData.guests); // 현재 인원 기본값
+      document.getElementById('change-guests-count').textContent = changeNewGuests;
+      document.getElementById('change-time-label').textContent = time;
+      const max = changeSlotRemain[time] || 5;
+      document.getElementById('change-guests-hint').textContent = `최대 ${max}명 가능`;
+      showStep('step-change-guests');
+    }
+
+    function changeChangeGuests(delta) {
+      const max = changeSlotRemain[changeNewTime] || 5;
+      changeNewGuests = Math.max(1, Math.min(max, changeNewGuests + delta));
+      document.getElementById('change-guests-count').textContent = changeNewGuests;
+    }
+
+    // ⑦ 변경 확인 화면
+    function showChangeConfirm() {
+      document.getElementById('change-confirm-card').innerHTML = `
+        <div class="row"><span>현재</span><span>${reservationData.time} / ${reservationData.guests}명</span></div>
+        <div class="row" style="justify-content:center;color:var(--muted);border-bottom:none;padding:4px 0;font-size:18px">↓</div>
+        <div class="row"><span>변경</span><span style="font-weight:600">${changeNewTime} / ${changeNewGuests}명</span></div>
+      `;
+      showStep('step-change-confirm');
+    }
+
+    // ⑧ 변경 실행
+    async function submitChange() {
+      const btn = document.querySelector('#step-change-confirm .btn-primary');
+      btn.textContent = '변경 중...';
+      btn.disabled = true;
+
+      try {
+        const res = await fetch(GAS_URL, {
+          method: 'POST',
+          body: JSON.stringify({
+            action: 'change',
+            code: reservationData.code,
+            phone: reservationData.phone,
+            newTime: changeNewTime,
+            newGuests: changeNewGuests
+          })
+        });
+        const data = await res.json();
+
+        if (data.success) {
+          document.getElementById('change-done-msg').textContent =
+            `${data.newTime} / ${data.newGuests}명으로 변경되었습니다.`;
+          showStep('step-change-done');
+        } else {
+          document.getElementById('error-title').textContent = '변경 실패';
+          document.getElementById('error-msg').textContent = data.message || '변경에 실패했습니다.';
+          showStep('step-error');
+        }
+      } catch {
+        document.getElementById('error-title').textContent = '오류가 발생했습니다';
+        document.getElementById('error-msg').textContent = '네트워크 오류입니다. 잠시 후 다시 시도해 주세요.';
+        showStep('step-error');
+      } finally {
+        btn.textContent = '변경하기';
         btn.disabled = false;
       }
     }
