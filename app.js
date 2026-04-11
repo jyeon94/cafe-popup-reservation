@@ -160,7 +160,6 @@ function showDoneStep(data) {
     <div class="row"><span>이름</span><span>${data.name}</span></div>
     <div class="row"><span>시간</span><span>${data.time}</span></div>
     <div class="row"><span>인원</span><span>${data.guests}명</span></div>
-    <div class="row"><span>예약코드</span><span class="code-value">${data.code}</span></div>
   `;
   document.getElementById('insta-box').style.display = 'block';
   document.getElementById('insta-done').style.display = 'none';

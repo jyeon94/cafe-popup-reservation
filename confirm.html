@@ -28,8 +28,11 @@
       <button class="btn-primary" onclick="lookupReservation()">확인하기</button>
       <p style="text-align:center;margin-top:16px;font-size:13px;color:var(--muted);line-height:1.6">
         예약 내역이 없다면 인스타 DM으로 문의해 주세요.<br>
-        <strong>@jeho______</strong> 또는 <strong>@k.sipster</strong>
+        <strong class="copy-id" data-id="@jeho______" onclick="copyInstaId(this)">@jeho______</strong>
+        또는
+        <strong class="copy-id" data-id="@k.sipster" onclick="copyInstaId(this)">@k.sipster</strong>
       </p>
+      <p id="copy-feedback" style="text-align:center;font-size:12px;color:var(--success);height:18px;margin-top:4px;transition:opacity 0.3s;opacity:0"></p>
       <p style="text-align:center;margin-top:12px">
         <a href="index.html" style="color:var(--muted);font-size:14px">← 예약 페이지로 돌아가기</a>
       </p>
@@ -49,7 +52,6 @@
 
     <!-- ③ 취소 확인 -->
     <section id="step-confirm" class="step">
-      <div class="error-icon" style="font-size:22px">?</div>
       <h2>정말 취소하시겠어요?</h2>
       <p style="text-align:center;color:var(--muted);font-size:14px;margin:12px 0 28px;line-height:1.7">
         취소 후에는 되돌릴 수 없습니다.<br>재예약은 예약 페이지에서 가능합니다.
@@ -81,8 +83,24 @@
     </section>
   </div>
 
+  <style>
+    .copy-id { cursor: pointer; text-decoration: underline dotted; }
+    @media (max-width: 767px) {
+      .container { padding-left: 20px; padding-right: 20px; }
+    }
+  </style>
   <script>
     const GAS_URL = 'https://script.google.com/macros/s/AKfycby7qgj93LtLd7pMIxugiZoekiEK9byrQR2l1eLAfbmIzztETXk5BhhWwxrOcb7ulQ5dww/exec';
+
+    function copyInstaId(el) {
+      const id = el.dataset.id;
+      navigator.clipboard.writeText(id).then(() => {
+        const fb = document.getElementById('copy-feedback');
+        fb.textContent = '복사됐어요!';
+        fb.style.opacity = '1';
+        setTimeout(() => { fb.style.opacity = '0'; }, 1500);
+      });
+    }
 
     let reservationData = null; // { code, name, phone, time, guests }
 
