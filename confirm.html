@@ -103,10 +103,11 @@
       <p id="change-time-label" style="text-align:center;font-size:15px;font-weight:600;color:var(--accent);margin-bottom:20px"></p>
       <div class="form-group">
         <label>인원</label>
+        <p style="font-size:12px;color:#c8a96e;margin:4px 0 8px">1인당 최대 2명까지 예약 가능합니다</p>
         <div class="guests-control">
           <button type="button" onclick="changeChangeGuests(-1)">−</button>
           <span id="change-guests-count">1</span>
-          <button type="button" onclick="changeChangeGuests(1)">+</button>
+          <button type="button" id="change-guests-plus" onclick="changeChangeGuests(1)">+</button>
         </div>
         <p class="guests-hint" id="change-guests-hint"></p>
       </div>
@@ -298,18 +299,22 @@
     // ⑥ 시간 선택 → 인원 선택 화면
     function selectChangeTime(time) {
       changeNewTime = time;
-      changeNewGuests = Number(reservationData.guests); // 현재 인원 기본값
+      const slotMax = changeSlotRemain[time] || 5;
+      const effectiveMax = Math.min(slotMax, 2);
+      changeNewGuests = Math.min(Number(reservationData.guests), effectiveMax); // 현재 인원 기본값 (2명 초과 시 2로 보정)
       document.getElementById('change-guests-count').textContent = changeNewGuests;
       document.getElementById('change-time-label').textContent = time;
-      const max = changeSlotRemain[time] || 5;
-      document.getElementById('change-guests-hint').textContent = `최대 ${max}명 가능`;
+      document.getElementById('change-guests-hint').textContent = `최대 ${effectiveMax}명 가능`;
+      document.getElementById('change-guests-plus').style.display = changeNewGuests >= 2 ? 'none' : '';
       showStep('step-change-guests');
     }
 
     function changeChangeGuests(delta) {
-      const max = changeSlotRemain[changeNewTime] || 5;
-      changeNewGuests = Math.max(1, Math.min(max, changeNewGuests + delta));
+      const slotMax = changeSlotRemain[changeNewTime] || 5;
+      const effectiveMax = Math.min(slotMax, 2);
+      changeNewGuests = Math.max(1, Math.min(effectiveMax, changeNewGuests + delta));
       document.getElementById('change-guests-count').textContent = changeNewGuests;
+      document.getElementById('change-guests-plus').style.display = changeNewGuests >= 2 ? 'none' : '';
     }
 
     // ⑦ 변경 확인 화면

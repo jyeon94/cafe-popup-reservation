@@ -92,18 +92,20 @@ function selectSlot(time, max, remain) {
 // 인원 제어
 // ───────────────────────────────
 function changeGuests(delta) {
+  const effectiveMax = Math.min(maxGuests, 2);
   const next = guestCount + delta;
-  if (next < 1 || next > maxGuests) return;
+  if (next < 1 || next > effectiveMax) return;
   guestCount = next;
   updateGuestsUI();
 }
 
 function updateGuestsUI() {
+  const effectiveMax = Math.min(maxGuests, 2);
   document.getElementById('guests-count').textContent = guestCount;
   document.getElementById('guests-minus').disabled = guestCount <= 1;
-  document.getElementById('guests-plus').disabled = guestCount >= maxGuests;
+  document.getElementById('guests-plus').style.display = guestCount >= 2 ? 'none' : '';
   document.getElementById('guests-hint').textContent =
-    guestCount === maxGuests ? `이 시간대 최대 인원(${maxGuests}명)입니다` : '';
+    guestCount >= effectiveMax ? `이 시간대 최대 인원(${effectiveMax}명)입니다` : '';
 }
 
 // ───────────────────────────────
