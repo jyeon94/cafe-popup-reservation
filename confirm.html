@@ -304,7 +304,7 @@
       changeNewGuests = Math.min(Number(reservationData.guests), effectiveMax); // 현재 인원 기본값 (2명 초과 시 2로 보정)
       document.getElementById('change-guests-count').textContent = changeNewGuests;
       document.getElementById('change-time-label').textContent = time;
-      document.getElementById('change-guests-hint').textContent = `최대 ${effectiveMax}명 가능`;
+      document.getElementById('change-guests-hint').textContent = `남은 자리 ${slotMax}명`;
       document.getElementById('change-guests-plus').style.display = changeNewGuests >= 2 ? 'none' : '';
       showStep('step-change-guests');
     }

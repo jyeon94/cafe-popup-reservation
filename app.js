@@ -104,8 +104,7 @@ function updateGuestsUI() {
   document.getElementById('guests-count').textContent = guestCount;
   document.getElementById('guests-minus').disabled = guestCount <= 1;
   document.getElementById('guests-plus').style.display = guestCount >= 2 ? 'none' : '';
-  document.getElementById('guests-hint').textContent =
-    guestCount >= effectiveMax ? `이 시간대 최대 인원(${effectiveMax}명)입니다` : '';
+  document.getElementById('guests-hint').textContent = `남은 자리 ${maxGuests}명`;
 }
 
 // ───────────────────────────────
